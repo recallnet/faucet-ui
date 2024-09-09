@@ -57,7 +57,7 @@ function FormContents() {
         placeholder="Enter your wallet address (0x...)"
         size={48}
         pattern="^0x[0-9a-fA-F]{40}$"
-        title="Provide a valid Ethereum address"
+        title="Provide a valid EVM address"
         required
       />
       <Button type="submit" disabled={status.pending}>

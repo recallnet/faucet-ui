@@ -1,5 +1,7 @@
 "use server";
 
+import { z } from "zod";
+
 export interface RequestTokensResult {
   txHash: string;
   txUrl: string;
@@ -10,10 +12,23 @@ export interface RequestTokensState {
   error?: string;
 }
 
+const requestTokensSchema = z.object({
+  address: z
+    .string()
+    .regex(/^0x[0-9a-fA-F]{40}$/, "Must be a valid EVM address"),
+});
+
 export async function requestTokens(
   prevState: RequestTokensState,
   formData: FormData,
 ): Promise<RequestTokensState> {
+  const parsedData = requestTokensSchema.safeParse({
+    address: formData.get("address"),
+  });
+  if (!parsedData.success) {
+    return { error: parsedData.error.message };
+  }
+
   const url = process.env.REGISTRAR_URL;
   if (!url) {
     return { error: "Registrar URL is not configured." };
@@ -23,15 +38,11 @@ export async function requestTokens(
     return { error: "Explorer URL is not configured." };
   }
 
-  const rawData = {
-    address: formData.get("address"),
-  };
-
   try {
     const headers = new Headers();
     headers.append("Content-Type", "application/json");
 
-    const body = JSON.stringify(rawData);
+    const body = JSON.stringify(parsedData.data);
 
     const resp = await fetch(url, { method: "POST", headers, body });
     if (resp.ok) {
