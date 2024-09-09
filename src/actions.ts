@@ -34,16 +34,23 @@ export async function requestTokens(
     const body = JSON.stringify(rawData);
 
     const resp = await fetch(url, { method: "POST", headers, body });
-    if (!resp.ok) {
-      return { error: "Failed to request tokens." };
+    if (resp.ok) {
+      const json = (await resp.json()) as { tx_hash: string };
+      const result = {
+        txHash: json.tx_hash,
+        txUrl: `${explorerTxnUrl}/${json.tx_hash}`,
+      };
+      return { result };
+    } else if (resp.status === 400) {
+      return { error: "Bad request." };
+    } else if (resp.status === 429) {
+      return { error: "You already received faucet tokens recently. Try again later." };
+    } else if (resp.status === 503) {
+      return { error: "The faucet is empty. Try again later." };
+    } else {
+      return { error: "Unknown error." };
     }
-    const json = (await resp.json()) as { tx_hash: string };
-    const result = {
-      txHash: json.tx_hash,
-      txUrl: `${explorerTxnUrl}/${json.tx_hash}`,
-    };
-    return { result };
-  } catch (_) {
-    return { error: "Failed to request tokens." };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : JSON.stringify(e) };
   }
 }
