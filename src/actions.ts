@@ -44,7 +44,9 @@ export async function requestTokens(
     } else if (resp.status === 400) {
       return { error: "Bad request." };
     } else if (resp.status === 429) {
-      return { error: "You already received faucet tokens recently. Try again later." };
+      return {
+        error: "You already received faucet tokens recently. Try again later.",
+      };
     } else if (resp.status === 503) {
       return { error: "The faucet is empty. Try again later." };
     } else {
