@@ -1,6 +1,15 @@
 "use server";
 
+import { auth, signIn as authSignIn, signOut as authSignOut } from "@/auth";
 import { z } from "zod";
+
+export async function signIn() {
+  await authSignIn("github");
+}
+
+export async function signOut() {
+  await authSignOut();
+}
 
 export interface RequestTokensResult {
   txHash: string;
@@ -22,6 +31,11 @@ export async function requestTokens(
   prevState: RequestTokensState,
   formData: FormData,
 ): Promise<RequestTokensState> {
+  const session = await auth();
+  if (!session) {
+    return { error: "You must be signed in to request tokens." };
+  }
+
   const parsedData = requestTokensSchema.safeParse({
     address: formData.get("address"),
   });

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { auth } from "@/auth";
+import SessionProvider from "@/providers/session-provider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -19,17 +21,19 @@ export const metadata: Metadata = {
   description: "Request tHOKU from the Hoku faucet",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <SessionProvider session={session}>{children}</SessionProvider>
         <Toaster />
       </body>
     </html>
