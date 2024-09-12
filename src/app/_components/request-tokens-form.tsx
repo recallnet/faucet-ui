@@ -40,14 +40,17 @@ export default function RequestTokensForm() {
   }, [state, toast]);
 
   return (
-    <form className="flex flex-col items-center gap-2" action={formAction}>
+    <form
+      className="flex flex-col items-center gap-2 sm:flex-row"
+      action={formAction}
+    >
       <FormContents />
     </form>
   );
 }
 
 function FormContents() {
-  const status = useFormStatus();
+  const { pending } = useFormStatus();
 
   return (
     <>
@@ -59,9 +62,10 @@ function FormContents() {
         pattern="^0x[0-9a-fA-F]{40}$"
         title="Provide a valid EVM address"
         required
+        className="bg-primary-foreground"
       />
-      <Button type="submit" disabled={status.pending}>
-        {status.pending && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
+      <Button type="submit" disabled={pending} size="default">
+        {pending && <Loader2 className="mr-2 size-5 animate-spin" />}
         Request tHOKU
       </Button>
     </>
