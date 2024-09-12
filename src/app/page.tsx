@@ -11,7 +11,7 @@ export default async function Home() {
       <div className="flex flex-col items-center">
         <span className="text-4xl font-bold">Hoku Network</span>
         <span className="text-sm font-medium text-muted-foreground">
-          Faucet
+          Testnet faucet
         </span>
       </div>
       {session?.user ? (
