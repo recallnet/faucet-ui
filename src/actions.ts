@@ -7,6 +7,10 @@ export async function signIn() {
   await authSignIn("github");
 }
 
+export async function signInEmail(formData: FormData) {
+  await authSignIn("postmark", formData);
+}
+
 export async function signOut() {
   await authSignOut();
 }

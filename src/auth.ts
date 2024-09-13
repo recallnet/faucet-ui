@@ -1,26 +1,10 @@
 import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
+import Postmark from "next-auth/providers/postmark";
+import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import { db } from "./schema";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  providers: [GitHub],
-  cookies: {
-    csrfToken: {
-      name: "next-auth.csrf-token",
-      options: {
-        httpOnly: true,
-        sameSite: "none",
-        path: "/",
-        secure: true,
-      },
-    },
-    pkceCodeVerifier: {
-      name: "next-auth.pkce.code_verifier",
-      options: {
-        httpOnly: true,
-        sameSite: "none",
-        path: "/",
-        secure: true,
-      },
-    },
-  },
+  adapter: DrizzleAdapter(db),
+  providers: [GitHub, Postmark({ from: process.env.POSTMARK_FROM })],
 });
