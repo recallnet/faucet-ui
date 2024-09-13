@@ -2,6 +2,7 @@ import SignIn from "@/components/sign-in";
 import RequestTokensForm from "./_components/request-tokens-form";
 import { auth } from "@/auth";
 import { UserNav } from "@/components/user-nav";
+import SignInEmail from "@/components/sign-in-email";
 
 export default async function Home() {
   const session = await auth();
@@ -19,6 +20,8 @@ export default async function Home() {
           <RequestTokensForm />
           <UserNav user={session.user} className="absolute right-4 top-4" />
         </>
+      ) : process.env.VERCEL_ENV === "preview" ? (
+        <SignInEmail />
       ) : (
         <SignIn />
       )}
