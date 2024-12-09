@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
-import { auth } from "@/auth";
-import SessionProvider from "@/providers/session-provider";
 import { Analytics } from "@vercel/analytics/react";
 import { Space_Mono } from "next/font/google";
 
@@ -22,15 +20,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth();
-
   return (
     <html lang="en">
       <body className={`${spaceMono.className} antialiased`}>
-        <SessionProvider session={session}>
-          {children}
-          <Analytics />
-        </SessionProvider>
+        {children}
+        <Analytics />
         <Toaster />
       </body>
     </html>

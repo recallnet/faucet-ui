@@ -2,4 +2,3 @@ node_modules
 .next
 src/components/ui
 src/hooks
-drizzle
