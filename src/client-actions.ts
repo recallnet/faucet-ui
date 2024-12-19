@@ -1,24 +1,5 @@
-"use server";
-
-import { auth, signIn as authSignIn, signOut as authSignOut } from "@/auth";
 import { z } from "zod";
-import { track } from "@vercel/analytics/server";
-import { Session } from "next-auth";
-
-export async function signIn() {
-  await authSignIn("github");
-  await track("sign-in", { provider: "github" });
-}
-
-export async function signInEmail(formData: FormData) {
-  await authSignIn("postmark", formData);
-  await track("sign-in", { provider: "email" });
-}
-
-export async function signOut() {
-  await authSignOut();
-  await track("sign-out");
-}
+import { track } from "@vercel/analytics/react";
 
 export interface RequestTokensResult {
   txHash: string;
@@ -34,31 +15,27 @@ const requestTokensSchema = z.object({
   address: z
     .string()
     .regex(/^0x[0-9a-fA-F]{40}$/, "Must be a valid EVM address"),
+  ts_response: z.string().min(1, "Turnstile response is required"),
 });
 
 export async function requestTokens(
   _: RequestTokensState,
   formData: FormData,
 ): Promise<RequestTokensState> {
-  let session: Session | null = null;
   try {
-    session = await auth();
-    if (!session?.user) {
-      throw new Error("You must be signed in to request tokens.");
-    }
-
     const parsedData = requestTokensSchema.safeParse({
       address: formData.get("address"),
+      ts_response: formData.get("cf-turnstile-response"),
     });
     if (!parsedData.success) {
       throw new Error(parsedData.error.message);
     }
 
-    const url = process.env.REGISTRAR_URL;
+    const url = process.env.NEXT_PUBLIC_REGISTRAR_URL;
     if (!url) {
       throw new Error("Registrar URL is not configured.");
     }
-    const explorerTxnUrl = process.env.EXPLORER_TXN_URL;
+    const explorerTxnUrl = process.env.NEXT_PUBLIC_EXPLORER_TXN_URL;
     if (!explorerTxnUrl) {
       throw new Error("Explorer URL is not configured.");
     }
@@ -66,24 +43,29 @@ export async function requestTokens(
     const headers = new Headers();
     headers.append("Content-Type", "application/json");
 
-    const body = JSON.stringify(parsedData.data);
+    const body = JSON.stringify({ ...parsedData.data, wait: true });
 
-    const resp = await fetch(url, { method: "POST", headers, body });
+    const resp = await fetch(url, {
+      method: "POST",
+      headers,
+      body,
+    });
     if (resp.ok) {
       const json = (await resp.json()) as { tx_hash: string };
       const result = {
         txHash: json.tx_hash,
         txUrl: `${explorerTxnUrl}/${json.tx_hash}`,
       };
-      await track("faucet-sent", { userId: session.user.id ?? null });
+      await track("faucet-sent", { address: parsedData.data.address });
       return { result };
     } else {
+      const text = await resp.text();
       await track("faucet-error", {
         status: resp.status,
-        userId: session.user.id ?? null,
+        error: text,
       });
       if (resp.status === 400) {
-        return { error: "Bad request." };
+        return { error: `Bad request: ${text}` };
       } else if (resp.status === 429) {
         return {
           error:
@@ -92,12 +74,12 @@ export async function requestTokens(
       } else if (resp.status === 503) {
         return { error: "The faucet is empty. Try again later." };
       } else {
-        return { error: "Unknown error." };
+        return { error: `Other error: ${text}` };
       }
     }
   } catch (e) {
     const message = e instanceof Error ? e.message : JSON.stringify(e);
-    track("internal-error", { message, userId: session?.user?.id ?? null });
-    return { error: message };
+    track("internal-error", { error: message });
+    return { error: `Internal error: ${message}` };
   }
 }
