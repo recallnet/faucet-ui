@@ -31,7 +31,7 @@ export async function requestTokens(
       throw new Error(parsedData.error.message);
     }
 
-    const url = process.env.NEXT_PUBLIC_REGISTRAR_URL;
+    const url = process.env.NEXT_PUBLIC_DRIP_URL;
     if (!url) {
       throw new Error("Registrar URL is not configured.");
     }
