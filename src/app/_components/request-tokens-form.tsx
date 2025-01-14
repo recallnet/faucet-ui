@@ -28,8 +28,7 @@ export default function RequestTokensForm() {
         title: "Success!",
         description: (
           <span>
-            tHOKU sent in txn
-            {state.result.txHash.slice(0, 6)}...
+            tHOKU sent in txn {state.result.txHash.slice(0, 6)}...
             {state.result.txHash.slice(-6)}
           </span>
         ),
