@@ -11,8 +11,8 @@ const spaceMono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Hoku Faucet",
-  description: "Request tHOKU from the Hoku faucet",
+  title: "Recall Faucet",
+  description: "Request RECALL from the Recall faucet",
 };
 
 export default async function RootLayout({
