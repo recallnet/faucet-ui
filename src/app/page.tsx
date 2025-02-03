@@ -1,6 +1,6 @@
 import RequestTokensForm from "./_components/request-tokens-form";
 import Image from "next/image";
-import logo from "@/public/Hoku_LogoLockup_Black.png";
+import logo from "@/public/Recall_LogoLockup_Black.png";
 
 export default async function Home() {
   return (
@@ -8,7 +8,7 @@ export default async function Home() {
       <div className="flex flex-col items-center">
         <Image
           src={logo}
-          alt="Hoku Logo"
+          alt="Recall Logo"
           width={7238}
           height={1620}
           className="max-w-80"

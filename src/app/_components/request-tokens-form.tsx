@@ -28,7 +28,7 @@ export default function RequestTokensForm() {
         title: "Success!",
         description: (
           <span>
-            tHOKU sent in txn {state.result.txHash.slice(0, 6)}...
+            RECALL sent in txn {state.result.txHash.slice(0, 6)}...
             {state.result.txHash.slice(-6)}
           </span>
         ),
@@ -67,7 +67,7 @@ function FormContents() {
       />
       <Button type="submit" disabled={pending || !tsResponse} size="default">
         {pending && <Loader2 className="mr-2 size-5 animate-spin" />}
-        Request tHOKU
+        Request RECALL
       </Button>
     </>
   );
