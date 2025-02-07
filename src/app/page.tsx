@@ -1,10 +1,10 @@
 import RequestTokensForm from "./_components/request-tokens-form";
 import Image from "next/image";
-import logo from "@/public/Recall_LogoLockup_Black.png";
+import logo from "@/public/recall.svg";
 
 export default async function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-gradient-to-b from-[#2085FA] to-[#A1FFCC] p-4">
+    <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-neutral-300 p-4">
       <div className="flex flex-col items-center">
         <Image
           src={logo}
